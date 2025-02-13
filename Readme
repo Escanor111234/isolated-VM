@@ -1,0 +1,71 @@
+# AWS Stateless Isolated VM Setup Guide
+
+This repository provides step-by-step instructions to recreate a stateless, isolated virtual machine (VM) in AWS.
+
+## Prerequisites
+- AWS account
+- IAM permissions to create EC2 instances, VPCs, and security groups
+- SSH client (e.g., OpenSSH, PuTTY)
+
+## Step 1: Set Up a VPC
+1. Go to the AWS Management Console.
+2. Navigate to **VPC > Your VPCs**.
+3. Click **Create VPC**, set:
+   - **Name:** `Stateless-Isolated-VPC`
+   - **IPv4 CIDR:** `10.0.0.0/16`
+   - **No internet gateway or NAT** (to ensure isolation)
+4. Click **Create VPC**.
+
+## Step 2: Create a Subnet
+1. In the VPC Dashboard, go to **Subnets**.
+2. Click **Create Subnet**, set:
+   - **VPC:** `Stateless-Isolated-VPC`
+   - **Subnet CIDR:** `10.0.1.0/24`
+   - **Availability Zone:** Choose any
+3. Click **Create Subnet**.
+
+## Step 3: Configure Security Group
+1. Navigate to **EC2 > Security Groups**.
+2. Click **Create Security Group**, set:
+   - **Name:** `Stateless-Isolated-SG`
+   - **VPC:** `Stateless-Isolated-VPC`
+3. No inbound rules (fully isolated).
+4. Click **Create Security Group**.
+
+## Step 4: Launch a Stateless EC2 Instance
+1. Go to **EC2 > Instances > Launch Instance**.
+2. Choose an AMI (Amazon Linux 2 or Ubuntu recommended).
+3. Select an instance type (e.g., `t2.micro` for free-tier).
+4. In **Network Settings**:
+   - **VPC:** `Stateless-Isolated-VPC`
+   - **Subnet:** `10.0.1.0/24`
+   - **Auto-assign public IP:** Disabled (to ensure isolation)
+   - **Security Group:** `Stateless-Isolated-SG`
+5. Do not attach a key pair (ensures statelessness and security).
+6. Click **Launch Instance**.
+
+## Step 5: Implement Stateless Access (Optional)
+To interact with the VM without SSH:
+- **Use AWS Lambda or Step Functions** for stateless execution.
+- **Use AWS Systems Manager** for controlled access if needed.
+
+## Step 6: Additional Stateless Configurations
+- Use ephemeral storage (Instance Store) instead of EBS.
+- Configure auto-termination to avoid persistent states.
+- Deploy applications as immutable images with AWS AMI or containers.
+
+## Cleanup
+To delete the setup:
+1. Terminate the EC2 instance.
+2. Delete the security group.
+3. Remove the subnet.
+4. Delete the VPC.
+
+## Notes
+- No persistent storage is attached.
+- No direct SSH access is allowed.
+- Stateless architecture ensures minimal vulnerability.
+
+---
+This guide ensures a secure, stateless AWS VM setup with isolation. Modify as per your project needs!
+
